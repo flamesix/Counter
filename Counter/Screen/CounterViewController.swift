@@ -9,12 +9,6 @@ import UIKit
 
 final class CounterViewController: UIViewController {
     
-    private enum Operation {
-        case plus
-        case minus
-        case reset
-    }
-    
     private var count: Int = 0 {
         didSet {
             counterLabel.text = "\(count)"
@@ -34,6 +28,8 @@ final class CounterViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setConstraints()
+        addButtonsTarget()
         initialCounterState()
     }
     
@@ -91,21 +87,27 @@ final class CounterViewController: UIViewController {
 }
 
 // MARK: - Methods
-extension CounterViewController {
+private extension CounterViewController {
     
-    @objc private func plusButtonTapped() {
+    enum Operation {
+        case plus
+        case minus
+        case reset
+    }
+    
+    @objc func plusButtonTapped() {
         counterLogic(operation: .plus)
     }
     
-    @objc private func minusButtonTapped() {
+    @objc func minusButtonTapped() {
         counterLogic(operation: .minus)
     }
     
-    @objc private func resetButtonTapped() {
+    @objc func resetButtonTapped() {
         counterLogic(operation: .reset)
     }
     
-    private func counterLogic(operation: Operation) {
+    func counterLogic(operation: Operation) {
         switch operation {
         case .plus:
             count += 1
@@ -125,32 +127,36 @@ extension CounterViewController {
         }
     }
         
-    private func messageGenerator(text: String) -> String {
+    func messageGenerator(text: String) -> String {
         "[\(Date().formatted(date: .abbreviated, time: .shortened))]: " + text
     }
     
-    private func autoScrollTextView() {
+    func autoScrollTextView() {
         let range = NSMakeRange(historyTextView.text.count - 1, 0)
         historyTextView.scrollRangeToVisible(range)
     }
 }
 
 // MARK: - InitialState and Constraints
-extension CounterViewController {
+private extension CounterViewController {
     
-    private func initialCounterState() {
+    func initialCounterState() {
         counterLabel.text = "\(count)"
         historyTextView.text = "История изменений:"
     }
     
-    private func setupUI() {
+    func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubviews(plusButton, minusButton, resetButton, counterLabel, historyTextView)
-        
+    }
+    
+    func addButtonsTarget() {
         plusButton.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
         minusButton.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside)
         resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
-        
+    }
+    
+    func setConstraints() {
         let padding: CGFloat = 40
         let buttonHeight: CGFloat = 60
         
